@@ -7,6 +7,7 @@ if [ -f ./check ]; then
   read name
   if [ -n "$name" ]; then
     git commit -m "$name"
+    git pull
     git push -u
   else
     git commit -m "lil update"
