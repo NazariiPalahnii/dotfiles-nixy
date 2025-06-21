@@ -41,7 +41,4 @@ It includes *home-manager*, *secrets*, and *custom theming* all in one place.
 ## Gallery
 
 ![Nixy helper, peaclock](.github/assets/nixy/1.png)
-![Qutebrowser, pipes, shell](.github/assets/nixy/2.png)
-![nvim, lazygit](.github/assets/nixy/3.png)
-![spotify, cava](.github/assets/nixy/4.png)
-
+![Nixy helper, nautilus](.github/assets/nixy/2.png)
