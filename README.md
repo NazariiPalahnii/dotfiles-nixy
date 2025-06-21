@@ -32,3 +32,13 @@ It includes *home-manager*, *secrets*, and *custom theming* all in one place.
 - 💻 Hyprland-centric: Preconfigured Hyprland ecosystem (Hyprlock, Hyprpanel, etc.)
 - 🎨 Consistent Theming: Base16 & Stylix-powered themes
 - ⌨️  Vim-like Everywhere: Unified keybindings (Hyprland, nvim, vimium, etc.)
+
+## Table of Content
+
+- [Gallery](#gallery)
+
+
+## Gallery
+
+![Nixy helper, peaclock](.github/assets/nixy/1.png)
+![Nixy helper, nautilus](.github/assets/nixy/2.png)
