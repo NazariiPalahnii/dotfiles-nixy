@@ -5,7 +5,7 @@
 
 <br>
 
-# Nixy
+# Dotfiles-Nixy
 
 <br>
 <div align="center">
