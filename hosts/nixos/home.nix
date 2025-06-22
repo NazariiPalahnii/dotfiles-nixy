@@ -20,6 +20,7 @@
     ../../home/programs/tailscale
     ../../home/programs/anyrun
     ../../home/programs/nh
+    ../../home/programs/qutebrowser
 
     # Scripts
     ../../home/scripts # All scripts
@@ -60,6 +61,7 @@
       telegram-desktop
       obs-studio
       firefox
+      qutebrowser
 
       # Dev
       go
