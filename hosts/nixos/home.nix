@@ -21,6 +21,7 @@
     ../../home/programs/anyrun
     ../../home/programs/nh
     ../../home/programs/qutebrowser
+    ../../home/programs/flatpak
 
     # Scripts
     ../../home/scripts # All scripts
@@ -62,6 +63,8 @@
       obs-studio
       firefox
       qutebrowser
+      lutris
+      bottles
 
       # Dev
       go
@@ -81,7 +84,6 @@
       pfetch
       btop
       fastfetch
-      bottles
       p7zip
       flatpak
       gdu
@@ -100,8 +102,8 @@
 
       # Backup
       vscode
-    ];
-
+    ]; 
+    
     # Import my profile picture, used by the hyprpanel dashboard
     file.".face.icon" = { source = ./profile_picture.png; };
 

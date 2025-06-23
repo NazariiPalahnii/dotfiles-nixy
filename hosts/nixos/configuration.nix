@@ -22,9 +22,7 @@
   environment.systemPackages = [
     inputs.swww.packages.${pkgs.system}.swww
   ];
-
-
-
+ 
   home-manager.users."${config.var.username}" = import ./home.nix;
 
   # Don't touch this

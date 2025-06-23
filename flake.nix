@@ -17,6 +17,7 @@
     anyrun.url = "github:fufexan/anyrun/launch-prefix";
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
     swww.url = "github:LGFae/swww";
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";

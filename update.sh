@@ -11,6 +11,7 @@ if [ -f ./check ]; then
     git push -u
   else
     git commit -m "lil update"
+    git pull
     git push -u
   fi
 else

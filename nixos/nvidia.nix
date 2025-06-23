@@ -1,9 +1,7 @@
 { lib, pkgs, config, ... }:
  {
   # Video drivers configuration for Xorg and Wayland
-  services.xserver.videoDrivers =
-    [ "nvidia" ]; # Simplified - other modules are loaded automatically
-
+  services.xserver.videoDrivers = [ "nvidia" ]; # Simplified - other modules are loaded automatically
   # Kernel parameters for better Wayland and Hyprland integration
   boot.kernelParams = [
     "nvidia-drm.modeset=1" # Enable mode setting for Wayland
@@ -20,6 +18,7 @@
     XDG_SESSION_TYPE = "wayland"; # Force Wayland
     GBM_BACKEND = "nvidia-drm"; # Graphics backend for Wayland
     __GLX_VENDOR_LIBRARY_NAME = "nvidia"; # Use Nvidia driver for GLX
+    __GL_SHADER_DISK_CACHE = "1";
     WLR_NO_HARDWARE_CURSORS = "1"; # Fix for cursors on Wayland
     NIXOS_OZONE_WL = "1"; # Wayland support for Electron apps
     __GL_GSYNC_ALLOWED = "1"; # Enable G-Sync if available
@@ -38,8 +37,9 @@
   # Nvidia configuration
   hardware = {
     nvidia = {
-      open = false; # Proprietary driver for better performance
-      nvidiaSettings = true; # Nvidia settings utility
+      open = false; # Proprietary driver for better performance 
+
+      nvidiaSettings = false; # Nvidia settings utility
       powerManagement = {
         enable = true; # Power management
         finegrained = true; # More precise power consumption control
@@ -47,14 +47,14 @@
       modesetting.enable = true; # Required for Wayland
       #package = nvidiaDriverChannel;
       forceFullCompositionPipeline = true; # Prevents screen tearing
+      package = config.boot.kernelPackages.nvidiaPackages.stable;
 
       # Configuration for hybrid AMD+Nvidia laptop
       prime = {
         # Optimized configuration for switchable graphics laptops
         offload = {
           enable = true; # Mode optimized for power saving
-          enableOffloadCmd =
-            true; # Allows running applications with dedicated GPU
+          enableOffloadCmd = true; # Allows running applications with dedicated GPU
         };
         # sync.enable disabled as offload is generally better for laptops
         sync.enable = false;
@@ -95,5 +95,10 @@
     vulkan-tools
     glxinfo
     libva-utils # VA-API debugging tools
+    winetricks
+    libkrb5
+    samba
+    gamemode
+    
   ];
 }
