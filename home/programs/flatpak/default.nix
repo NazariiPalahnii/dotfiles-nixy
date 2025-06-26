@@ -18,6 +18,12 @@ in
       example = [ "com.github.tchx84.Flatseal" ];
       description = "Packages to install from flatpak";
     };
+    extraRemotes = [
+      {
+        name = "flathub";
+        url  = "https://dl.flathub.org/repo/flathub.flatpakrepo";
+      }
+    ];
   };
 
   imports = [

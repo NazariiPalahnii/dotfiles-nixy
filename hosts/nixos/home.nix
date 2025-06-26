@@ -20,7 +20,6 @@
     ../../home/programs/tailscale
     ../../home/programs/anyrun
     ../../home/programs/nh
-    ../../home/programs/qutebrowser
     ../../home/programs/flatpak
 
     # Scripts
