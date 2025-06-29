@@ -13,9 +13,7 @@
     ../../home/programs/git/signing.nix
     ../../home/programs/spicetify
     ../../home/programs/nextcloud
-    # ../../home/programs/thunar
     ../../home/programs/lazygit
-    ../../home/programs/duckduckgo-colorscheme
     ../../home/programs/discord
     ../../home/programs/tailscale
     ../../home/programs/anyrun
@@ -57,13 +55,12 @@
       gnome-clocks
       gnome-text-editor
       mpv # Video player
-      steam
       telegram-desktop
       obs-studio
       firefox
-      qutebrowser
       lutris
       bottles
+      steam
 
       # Dev
       go
@@ -104,8 +101,7 @@
     ]; 
     
     # Import my profile picture, used by the hyprpanel dashboard
-    file.".face.icon" = { source = ./profile_picture.png; };
-
+      file.".face.icon" = { source = ./profile_picture.png; };
     # Don't touch this
     stateVersion = "24.05";
   };

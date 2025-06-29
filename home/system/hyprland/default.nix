@@ -64,6 +64,7 @@ in {
         "swww-daemon"
         "obsidian"
         "discord"
+        "hyprpanel"
         "dbus-update-activation-environment --systemd --all &"
         #"systemctl --user enable --now hyprpaper.service &"
         "systemctl --user enable --now hypridle.service &"
@@ -97,7 +98,7 @@ in {
         "WLR_RENDERER,vulkan"
         "WLR_NO_HARDWARE_CURSORS,1"
         "XCURSOR_SIZE,28"
-        "SDL_VIDEODRIVER,wayland"
+       # "SDL_VIDEODRIVER,wayland"
         "CLUTTER_BACKEND,wayland"
         "AQ_DRM_DEVICES,/dev/dri/card2:/dev/dri/card1" # CHANGEME: Related to the GPU
       ];

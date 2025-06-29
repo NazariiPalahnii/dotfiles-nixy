@@ -28,13 +28,10 @@ let
   location = config.var.location;
 in {
 
-  imports = [ inputs.hyprpanel.homeManagerModules.hyprpanel ];
+  #imports = [ inputs.hyprpanel.homeManagerModules.hyprpanel ];
 
   programs.hyprpanel = {
     enable = true;
-    hyprland.enable = true;
-    overwrite.enable = true;
-    overlay.enable = true;
 
     settings = {
       "bar.layouts" = {
