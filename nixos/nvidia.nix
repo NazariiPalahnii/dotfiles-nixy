@@ -1,45 +1,33 @@
+{ config, pkgs, ... }:
 {
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-with lib;
-let
-  cfg = config.graphics;
-in
-{
-  options.graphics = {
-    enable = mkEnableOption "Enable graphics";
-    nvidia.enable = mkEnableOption "Enable NVIDIA specific stuff (can be used together with AMDGPU)";
-    amdgpu = {
-      enable = mkEnableOption "Enable some AMDGPU specific stuff (can be used together with NVIDIA)";
-      pro = mkEnableOption "Enable OpenCL and ROCm";
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  hardware = {
+    graphics = {
+      enable = true;
+      enable32Bit = true;
+      extraPackages = with pkgs; [
+        nvidia-vaapi-driver
+        vaapiVdpau
+        libvdpau-va-gl
+        libva
+      ];
+    };
+
+    nvidia = {
+      modesetting.enable = true;
+      powerManagement.enable = false;
+      powerManagement.finegrained = false;
+      open = false;
+      nvidiaSettings = false;
+
+      package = config.boot.kernelPackages.nvidiaPackages.beta;    
     };
   };
 
-  config = mkIf cfg.enable {
-    hardware = {
-      graphics = {
-        enable = true;
-        enable32Bit = true;
-      };
-      amdgpu = mkMerge [
-        (mkIf cfg.amdgpu.enable { initrd.enable = false; })
-        (mkIf cfg.amdgpu.pro { opencl.enable = true; })
-      ];
-      nvidia = mkIf cfg.nvidia.enable {
-        modesetting.enable = true;
-        powerManagement.enable = true;
-        open = false;
-        nvidiaSettings = true;
-        package = config.boot.kernelPackages.nvidiaPackages.beta;
-      };
-    };
-    services.xserver.videoDrivers = mkMerge [
-      (mkIf cfg.nvidia.enable [ "nvidia" ])
-      (mkIf cfg.amdgpu.enable [ "amdgpu" ])
-    ];
-    environment.variables.ROC_ENABLE_PRE_VEGA = mkIf (cfg.amdgpu.pro && cfg.amdgpu.enable) "1";
-  };
+  environment.systemPackages = with pkgs; [
+    vulkan-tools
+    glxinfo
+    libva-utils # VA-API debugging tools
+  ];
 }

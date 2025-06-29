@@ -19,13 +19,6 @@
     ./variables.nix
   ];
 
-  graphics = {
-
-    enable = true;
-
-    nvidia.enable = true;
-  };
-
   environment.systemPackages = [
     inputs.swww.packages.${pkgs.system}.swww
   ];

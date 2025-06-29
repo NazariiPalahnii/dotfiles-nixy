@@ -18,7 +18,6 @@
     ../../home/programs/tailscale
     ../../home/programs/anyrun
     ../../home/programs/nh
-    ../../home/programs/flatpak
 
     # Scripts
     ../../home/scripts # All scripts
