@@ -1,4 +1,4 @@
-{ pkgs, config, inputs, ... }: {
+{ pkgs, config, ... }: {
 
   imports = [
     # Mostly user-specific configuration
@@ -13,9 +13,7 @@
     ../../home/programs/git/signing.nix
     ../../home/programs/spicetify
     ../../home/programs/nextcloud
-    # ../../home/programs/thunar
     ../../home/programs/lazygit
-    ../../home/programs/duckduckgo-colorscheme
     ../../home/programs/discord
     ../../home/programs/tailscale
     ../../home/programs/anyrun
@@ -46,7 +44,7 @@
       # Apps
       bitwarden # Password manager
       vlc # Video player
-      #blanket # White-noise app
+      blanket # White-noise app
       obsidian # Note taking app
       # planify # Todolists
       gnome-calendar # Calendar
@@ -56,10 +54,12 @@
       gnome-clocks
       gnome-text-editor
       mpv # Video player
-      steam
       telegram-desktop
       obs-studio
       firefox
+      lutris
+      bottles
+      steam
 
       # Dev
       go
@@ -70,7 +70,7 @@
       just
       pnpm
       air
-      
+
       # Utils
       zip
       unzip
@@ -79,13 +79,14 @@
       pfetch
       btop
       fastfetch
-      bottles
       p7zip
       flatpak
       gdu
       dysk
       swww
-      
+      xdg-desktop-portal
+      wayvnc
+
       # Just cool
       peaclock
       cbonsai
@@ -96,11 +97,10 @@
 
       # Backup
       vscode
-    ];
-
+    ]; 
+    
     # Import my profile picture, used by the hyprpanel dashboard
-    file.".face.icon" = { source = ./profile_picture.png; };
-
+      file.".face.icon" = { source = ./profile_picture.png; };
     # Don't touch this
     stateVersion = "24.05";
   };

@@ -61,7 +61,9 @@ in {
       "$shiftMod" = "SUPER_SHIFT";
 
       exec-once = [
-        "hyprpaper"
+        "discord"
+        "obsidian"
+        "hyprpanel"
         "swww-daemon"
         "dbus-update-activation-environment --systemd --all &"
         #"systemctl --user enable --now hyprpaper.service &"

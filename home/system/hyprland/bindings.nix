@@ -9,9 +9,9 @@
       "$mod,X, exec, powermenu" # Powermenu
       "$mod,SPACE, exec, menu" # Launcher
       "$mod,C, exec, quickmenu" # Quickmenu
-      "$mod, I, exec, ~/.config/nixos/home/scripts/swww/swww.sh"
+      "$mod,I, exec, ${../../scripts/swww/swww.sh} "
       "$shiftMod,SPACE, exec, hyprfocus-toggle" # Toggle HyprFocus
-      "$mod, Y, exec, ../../scripts/yazi/yazi.sh"
+      "$mod,Y, exec, ${../../scripts/yazi/yazi.sh}"
       # "$mod,P, exec,  uwsm app -- ${pkgs.planify}/bin/io.github.alainm23.planify" # Planify
       "$mod, S, togglespecialworkspace, magic"
       "$mod SHIFT, S, movetoworkspace, special:magic"

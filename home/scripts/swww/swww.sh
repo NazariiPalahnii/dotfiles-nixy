@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
-set -euo pipefail
-if [[ -n "${1-}" ]]; then
-  WALL_DIR="$1"
-elif [[ -n "${HOME-}" ]]; then
-  WALL_DIR="$HOME/.config/nixos/Wallpapers"
+
+DIR="/etc/nixos/Wallpapers"
+PICS=($(ls ${DIR}))
+
+RANDOMPICS=${PICS[ $RANDOM % ${#PICS[@]} ]}
+
+if [[ $(pidof swaybg) ]]; then
+  pkill swaybg
 fi
 
-IMG=$(find "$WALL_DIR" -maxdepth 1 -type f \
-      \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' \) \
-      | shuf -n1)
+swww query || swww-daemon
 
-
-echo "Меняем обои на: $IMG"
-swww img --transition-fps=60 --transition-type=wipe --transition-angle=30 "$IMG"
-
+#change-wallpaper using swww
+swww img ${DIR}/${RANDOMPICS} --transition-fps 60 --transition-type wipe --transition-duration 3
