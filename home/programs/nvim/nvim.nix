@@ -1,318 +1,391 @@
+{ config, lib, pkgs, ... }:
 {
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-{
-    programs.neovim = {
-      plugins = with pkgs.vimPlugins; [
-        onedark-nvim
-        indent-blankline-nvim
-        nvim-web-devicons
-        nvim-treesitter-parsers.cpp
-        nvim-treesitter-parsers.nix
-        nvim-treesitter-parsers.javascript
-        nvim-treesitter
-        indent-blankline-nvim
-        rainbow-delimiters-nvim
-        lsp_signature-nvim
-        coc-ultisnips
-        coc-snippets
-        vim-snippets
-        coc-json
-        coc-basedpyright
-        coc-css
-        coc-html
-        nvim-tree-lua
-        stabilize-nvim
-        bufferline-nvim
-        mini-pairs
-        cord-nvim
-      ];
-      coc.settings = {
-        languageserver = {
-          ccls = {
-            command = "ccls";
-            filetypes = [
-              "c"
-              "cc"
-              "cpp"
-              "c++"
-              "objc"
-              "objcpp"
-            ];
-            rootPatterns = [
-              ".ccls"
-              "compile_commands.json"
-              ".git/"
-              ".hg/"
-            ];
-            initializationOptions = {
-              cache = {
-                directory = "/tmp/ccls";
-              };
-            };
-          };
-        };
-      };
-        extraLuaConfig = '' 
-        require('cord').setup()
-        require("mini.pairs").setup {
-	  modes = { insert = true, command = false, terminal = false },
+  programs.neovim = {
+    enable = true;
+    viAlias = true;
+    vimAlias = true;
+    defaultEditor = true;
 
-  	  mappings = {
-            ['('] = { action = 'open', pair = '()', neigh_pattern = '[^\\].' },
-            ['['] = { action = 'open', pair = '[]', neigh_pattern = '[^\\].' },
-    	    ['{'] = { action = 'open', pair = '{}', neigh_pattern = '[^\\].' },
+    plugins = with pkgs.vimPlugins; [
+      onedark-nvim
+      nvim-web-devicons
+      lualine-nvim
+      bufferline-nvim
+      nvim-tree-lua
+      indent-blankline-nvim
+      nvim-scrollbar
+      
+      telescope-nvim
+      telescope-fzf-native-nvim
+      telescope-file-browser-nvim
+      nvim-treesitter-context
+      
+      nvim-lspconfig
+      nvim-cmp
+      cmp-nvim-lsp
+      cmp-buffer
+      cmp-path
+      cmp-cmdline
+      cmp-vsnip
+      vim-vsnip
+      lspkind-nvim
+      lspsaga-nvim
+      trouble-nvim
+      
+      (nvim-treesitter.withPlugins (plugins: [
+        plugins.tree-sitter-python
+        plugins.tree-sitter-rust
+        plugins.tree-sitter-javascript
+        plugins.tree-sitter-typescript
+        plugins.tree-sitter-html
+        plugins.tree-sitter-css
+        plugins.tree-sitter-json
+        plugins.tree-sitter-lua
+        plugins.tree-sitter-nix
+        plugins.tree-sitter-cpp
+        plugins.tree-sitter-bash
+        plugins.tree-sitter-markdown
+      ]))
+      nvim-ts-autotag
+      rainbow-delimiters-nvim
+      gitsigns-nvim
+      
+      nvim-autopairs
+      comment-nvim
+      which-key-nvim
+      surround-nvim
+      nvim-colorizer-lua
+    ];
 
-    	    [')'] = { action = 'close', pair = '()', neigh_pattern = '[^\\].' },
-            [']'] = { action = 'close', pair = '[]', neigh_pattern = '[^\\].' },
-            ['}'] = { action = 'close', pair = '{}', neigh_pattern = '[^\\].' },
+    extraLuaConfig = ''
+      -- Базовые настройки
+      vim.opt.termguicolors = true
+      vim.cmd.colorscheme("onedark")
+      vim.opt.number = true
+      vim.opt.relativenumber = true
+      vim.opt.tabstop = 2
+      vim.opt.shiftwidth = 2
+      vim.opt.expandtab = true
+      vim.opt.smartindent = true
+      vim.opt.signcolumn = "yes"
+      vim.opt.updatetime = 300
+      vim.opt.backup = false
+      vim.opt.writebackup = false
 
-            ['"'] = { action = 'closeopen', pair = '""', neigh_pattern = '[^\\].', register = { cr = false } },
-            ['`'] = { action = 'closeopen', pair = '``', neigh_pattern = '[^\\].', register = { cr = false } },
-	    ["<"] = { action = "closeopen", pair = "<>", neigh_pattern = "[^\\]." },
-  	  },
-	}
-        require("bufferline").setup{}
-        require("stabilize").setup({
-        force = true,
-        forcemark = nil,
-        nested = nil, 
-        ignore = { 
-          filetype = { "help", "NvimTree", "Trouble", "qf" },
-          buftype = { "terminal", "quickfix", "prompt" },
+      -- Горячие клавиши
+      vim.g.mapleader = ' '
+      vim.keymap.set('n', '<leader>tt', ':NvimTreeToggle<CR>', { silent = true })
+      vim.keymap.set('n', '<leader>ff', ':Telescope find_files<CR>', { silent = true })
+      vim.keymap.set('n', '<leader>fg', ':Telescope live_grep<CR>', { silent = true })
+      vim.keymap.set('n', '<leader>fb', ':Telescope buffers<CR>', { silent = true })
+      vim.keymap.set('n', '<leader>gd', ':lua vim.lsp.buf.definition()<CR>', { silent = true })
+      vim.keymap.set('n', '<leader>gr', ':lua vim.lsp.buf.references()<CR>', { silent = true })
+      vim.keymap.set('n', '<leader>rn', ':lua vim.lsp.buf.rename()<CR>', { silent = true })
+      vim.keymap.set('n', '<leader>aa', ':tabnew +Ex /etc/nixos<CR>', { silent = true })
+
+      -- Фикс конфликтов для comment.nvim
+      vim.keymap.set('n', '<leader>cc', '<cmd>lua require("Comment.api").toggle.linewise.current()<CR>', { silent = true })
+      vim.keymap.set('n', '<leader>bc', '<cmd>lua require("Comment.api").toggle.blockwise.current()<CR>', { silent = true })
+
+      -- Конфиг bufferline (верхняя панель вкладок)
+      require("bufferline").setup({
+        options = {
+          mode = "tabs",
+          separator_style = "slant",
+          always_show_bufferline = true,
+          show_close_icon = false,
+          offsets = {
+          {
+            filetype = "NvimTree",
+            text = "File Explorer",
+            highlight = "Directory",
+            text_align = "left"
+          }
+        }
+      }
+    })
+
+    -- Конфиг trouble.nvim (просмотр ошибок)
+    require("trouble").setup({
+      position = "bottom",
+      height = 10,
+      icons = true,
+      mode = "document_diagnostics"
+    })
+
+
+    -- Конфиг which-key (подсказки клавиш)
+    require("which-key").setup({
+    plugins = {
+      marks = true,
+      registers = true,
+      spelling = {
+        enabled = true,
+        suggestions = 20,
+      },
+    },
+    win = {
+      border = "rounded",
+      margin = { 1, 0, 1, 0 },
+      padding = { 2, 1, 2, 1 },
+    },
+  })
+
+      -- Конфиг nvim-autopairs (автозакрытие скобок)
+      require("nvim-autopairs").setup({
+        disable_filetype = { "TelescopePrompt", "vim" },
+        fast_wrap = {
+          map = "<M-e>",
+          chars = { "{", "[", "(", '"', "'" },
         },
-          timeout = 500,
-        })
-        require'nvim-treesitter.configs'.setup {
-          highlight = {
-            enable = true,
+      })
+      -- Конфиг comment.nvim (комментирование)
+      require("Comment").setup({
+        toggler = {
+          line = "<leader>cc",  -- Было <leader>c
+          block = "<leader>bc", -- Было <leader>b
+        },
+        opleader = {
+          line = "<leader>c",
+          block = "<leader>b",
+        },
+        extra = {
+          eol = "<leader>ce", -- Новый маппинг для end-of-line
+        },
+      })
+      -- Конфиг nvim-colorizer (показ цветов)
+      require("colorizer").setup({
+        "*",
+        css = { rgb_fn = true },
+          scss = { rgb_fn = true },
+        }, {
+        names = false,
+      })
+
+      -- Конфиг surround.nvim (обрамление текста)
+      require("surround").setup({})
+
+      -- Конфиг scrollbar
+      require("scrollbar").setup({
+        show = true,
+        handle = {
+          color = "#3e4452",
+        },
+        marks = {
+          Search = { color = "#e5c07b" },
+          Error = { color = "#e06c75" },
+          Warn = { color = "#d19a66" },
+          Info = { color = "#61afef" },
+          Hint = { color = "#98c379" },
+        },
+      })
+
+          -- Настройка LSP серверов (добавь в секцию LSP)
+      local servers = {
+        pyright = {},      -- Python
+        rust_analyzer = {},-- Rust
+        tsserver = {},     -- TypeScript/JavaScript
+        html = {},         -- HTML
+        cssls = {},        -- CSS
+        jsonls = {},       -- JSON
+        lua_ls = {         -- Lua
+            settings = {
+            Lua = {
+              runtime = { version = "LuaJIT" },
+              diagnostics = { globals = { "vim" } },
+              workspace = { library = vim.api.nvim_get_runtime_file("", true) },
+              telemetry = { enable = false },
+            },
           },
-          vim.cmd([[
-            let g:onedark_config = { 'style': 'deep', }
-            colorscheme onedark
-            highlight Normal guifg=#bbddff
-            map! <S-Insert> <C-R>+
-            map !aa :tabnew +Ex /etc/nixos<cr>
-            nnoremap <silent> <C-h> :CocCommand document.toggleInlayHint<CR>
-            set number
-            highlight EndOfBuffer ctermbg=none guibg=none
-            highlight SignColumn ctermbg=none guibg=none
-            highlight Normal guibg=none
-            highlight NonText guibg=none
-            highlight Normal ctermbg=none
-            highlight NonText ctermbg=none
-            highlight StatusLine guibg=none
-            set tabstop=2
-            set softtabstop=2
-            set shiftwidth=2
-            set expandtab
-            set autoindent
-            set smartindent
-          ]])
+        },
+        nixd = {},         -- Nix
+        clangd = {},       -- C/C++
+        bashls = {},       -- Bash
+        marksman = {},     -- Markdown
+      }
+
+      -- Клавиши для trouble.nvim
+      vim.keymap.set("n", "<leader>xx", "<cmd>TroubleToggle<cr>", { silent = true })
+      vim.keymap.set("n", "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", { silent = true })
+      vim.keymap.set("n", "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", { silent = true })
+
+      -- Клавиши для Lspsaga
+      vim.keymap.set("n", "gh", "<cmd>Lspsaga lsp_finder<CR>", { silent = true })
+      vim.keymap.set("n", "K", "<cmd>Lspsaga hover_doc<CR>", { silent = true })
+      vim.keymap.set("n", "gp", "<cmd>Lspsaga peek_definition<CR>", { silent = true })
+      -- Статусная строка
+      require('lualine').setup({
+        options = {
+          theme = 'onedark',
+          component_separators = { left = '|', right = '|'},
+          section_separators = { left = "", right = ""},
+        },
+        sections = {
+          lualine_a = {'mode'},
+          lualine_b = {'branch', 'diff', 'diagnostics'},
+          lualine_c = {'filename'},
+          lualine_x = {'encoding', 'fileformat', 'filetype'},
+          lualine_y = {'progress'},
+          lualine_z = {'location'}
+        },
+      })
+      
+      -- Дерево файлов
+      require("nvim-tree").setup({
+        view = {
+          width = 35,
+        },
+        renderer = {
+          group_empty = true,
+          highlight_git = true,
+          icons = {
+            show = {
+              git = true,
+            },
+          },
+        },
+      })
+      
+      -- Поиск (Telescope)
+      local telescope = require('telescope')
+      telescope.setup({
+        defaults = {
+          layout_strategy = 'vertical',
+          layout_config = { height = 0.95, width = 0.95 },
+          sorting_strategy = 'ascending',
+          prompt_prefix = "🔍 ",
+          file_ignore_patterns = { "node_modules", ".git" },
+        },
+        pickers = {
+          find_files = { theme = "dropdown" },
+          live_grep = { theme = "ivy" },
+          buffers = { theme = "dropdown" },
+        },
+      })
+      telescope.load_extension('fzf')
+      telescope.load_extension('file_browser')
+      
+      -- LSP и автодополнение
+      local cmp = require('cmp')
+      cmp.setup({
+        snippet = {
+          expand = function(args) vim.fn["vsnip#anonymous"](args.body) end,
+        },
+        mapping = cmp.mapping.preset.insert({
+          ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+          ['<C-f>'] = cmp.mapping.scroll_docs(4),
+          ['<C-Space>'] = cmp.mapping.complete(),
+          ['<C-e>'] = cmp.mapping.abort(),
+          ['<CR>'] = cmp.mapping.confirm({ select = true }),
+        }),
+        sources = cmp.config.sources({
+          { name = 'nvim_lsp' },
+          { name = 'vsnip' },
+          { name = 'buffer' },
+          { name = 'path' },
+        }),
+        formatting = {
+          format = require('lspkind').cmp_format({
+            mode = 'symbol_text',
+            maxwidth = 50,
+            ellipsis_char = '...',
+          })
         }
-        require("ibl").setup {
-          indent = { char = "│" },  -- Vertical indentation line
-          scope = { enabled = true, show_start = true, show_end = true }, -- Enable scope guides
+      })
+      
+      -- Настройка LSP серверов
+      local lspconfig = require('lspconfig')
+      local capabilities = require('cmp_nvim_lsp').default_capabilities()
+      
+      
+      -- Treesitter
+      require('nvim-treesitter.configs').setup({
+        highlight = { enable = true },
+        indent = { enable = true },
+        autotag = { enable = true },
+        rainbow = { enable = true },
+        incremental_selection = {
+          enable = true,
+          keymaps = {
+            init_selection = "gnn",
+            node_incremental = "grn",
+            scope_incremental = "grc",
+            node_decremental = "grm",
+          },
+        },
+      })
+      
+      -- Git интеграция
+      require('gitsigns').setup({
+        current_line_blame = true,
+        current_line_blame_opts = {
+          virt_text = true,
+          virt_text_pos = 'eol',
+          delay = 1000,
+        },
+      })
+      
+      -- Горячие клавиши
+      vim.g.mapleader = ' '
+      vim.keymap.set('n', '<leader>tt', ':NvimTreeToggle<CR>', { silent = true })
+      vim.keymap.set('n', '<leader>ff', ':Telescope find_files<CR>', { silent = true })
+      vim.keymap.set('n', '<leader>fg', ':Telescope live_grep<CR>', { silent = true })
+      vim.keymap.set('n', '<leader>fb', ':Telescope buffers<CR>', { silent = true })
+      vim.keymap.set('n', '<leader>gd', ':lua vim.lsp.buf.definition()<CR>', { silent = true })
+      vim.keymap.set('n', '<leader>gr', ':lua vim.lsp.buf.references()<CR>', { silent = true })
+      vim.keymap.set('n', '<leader>rn', ':lua vim.lsp.buf.rename()<CR>', { silent = true })
+      vim.keymap.set('n', '<leader>aa', ':tabnew +Ex /etc/nixos<CR>', { silent = true })
+      
+      -- Автоформатирование
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        pattern = { "*.py", "*.rs", "*.js", "*.ts", "*.lua", "*.nix", "*.cpp", "*.c" },
+        callback = function()
+          vim.lsp.buf.format({ async = false })
+        end
+      })
+      
+      -- Индикаторы отступов
+      require("ibl").setup {
+        indent = { char = "▏" },
+        scope = { 
+          enabled = true,
+          show_start = true,
+          show_end = true,
         }
-        -- https://raw.githubusercontent.com/neoclide/coc.nvim/master/doc/coc-example-config.lua
-
-        -- Some servers have issues with backup files, see #649
-        vim.opt.backup = false
-        vim.opt.writebackup = false
-
-        -- Having longer updatetime (default is 4000 ms = 4s) leads to noticeable
-        -- delays and poor user experience
-        vim.opt.updatetime = 300
-
-        -- Always show the signcolumn, otherwise it would shift the text each time
-        -- diagnostics appeared/became resolved
-        vim.opt.signcolumn = "yes"
-
-        local keyset = vim.keymap.set
-        -- Autocomplete
-        function _G.check_back_space()
-            local col = vim.fn.col('.') - 1
-            return col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') ~= nil
-        end
-
-        -- Use Tab for trigger completion with characters ahead and navigate
-        -- NOTE: There's always a completion item selected by default, you may want to enable
-        -- no select by setting `"suggest.noselect": true` in your configuration file
-        -- NOTE: Use command ':verbose imap <tab>' to make sure Tab is not mapped by
-        -- other plugins before putting this into your config
-        local opts = {silent = true, noremap = true, expr = true, replace_keycodes = false}
-        keyset("i", "<TAB>", 'coc#pum#visible() ? coc#pum#next(1) : v:lua.check_back_space() ? "<TAB>" : coc#refresh()', opts)
-        keyset("i", "<S-TAB>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"]], opts)
-
-        -- Make <CR> to accept selected completion item or notify coc.nvim to format
-        -- <C-g>u breaks current undo, please make your own choice
-        keyset("i", "<cr>", [[coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"]], opts)
-
-        -- Use <c-j> to trigger snippets
-        keyset("i", "<c-j>", "<Plug>(coc-snippets-expand-jump)")
-        -- Use <c-space> to trigger completion
-        keyset("i", "<c-space>", "coc#refresh()", {silent = true, expr = true})
-
-        -- Use `[g` and `]g` to navigate diagnostics
-        -- Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
-        keyset("n", "[g", "<Plug>(coc-diagnostic-prev)", {silent = true})
-        keyset("n", "]g", "<Plug>(coc-diagnostic-next)", {silent = true})
-
-        -- GoTo code navigation
-        keyset("n", "gd", "<Plug>(coc-definition)", {silent = true})
-        keyset("n", "gy", "<Plug>(coc-type-definition)", {silent = true})
-        keyset("n", "gi", "<Plug>(coc-implementation)", {silent = true})
-        keyset("n", "gr", "<Plug>(coc-references)", {silent = true})
-
-
-        -- Use K to show documentation in preview window
-        function _G.show_docs()
-            local cw = vim.fn.expand('<cword>')
-            if vim.fn.index({'vim', 'help'}, vim.bo.filetype) >= 0 then
-                vim.api.nvim_command('h ' .. cw)
-            elseif vim.api.nvim_eval('coc#rpc#ready()') then
-                vim.fn.CocActionAsync('doHover')
-            else
-                vim.api.nvim_command('!' .. vim.o.keywordprg .. ' ' .. cw)
-            end
-        end
-        keyset("n", "K", '<CMD>lua _G.show_docs()<CR>', {silent = true})
-
-
-        -- Highlight the symbol and its references on a CursorHold event(cursor is idle)
-        vim.api.nvim_create_augroup("CocGroup", {})
-        vim.api.nvim_create_autocmd("CursorHold", {
-            group = "CocGroup",
-            command = "silent call CocActionAsync('highlight')",
-            desc = "Highlight symbol under cursor on CursorHold"
-        })
-
-
-        -- Symbol renaming
-        keyset("n", "<leader>rn", "<Plug>(coc-rename)", {silent = true})
-
-
-        -- Formatting selected code
-        keyset("x", "<leader>f", "<Plug>(coc-format-selected)", {silent = true})
-        keyset("n", "<leader>f", "<Plug>(coc-format-selected)", {silent = true})
-
-
-        -- Setup formatexpr specified filetype(s)
-        vim.api.nvim_create_autocmd("FileType", {
-            group = "CocGroup",
-            pattern = "typescript,json",
-            command = "setl formatexpr=CocAction('formatSelected')",
-            desc = "Setup formatexpr specified filetype(s)."
-        })
-
-        -- Update signature help on jump placeholder
-        vim.api.nvim_create_autocmd("User", {
-            group = "CocGroup",
-            pattern = "CocJumpPlaceholder",
-            command = "call CocActionAsync('showSignatureHelp')",
-            desc = "Update signature help on jump placeholder"
-        })
-
-        -- Apply codeAction to the selected region
-        -- Example: `<leader>aap` for current paragraph
-        local opts = {silent = true, nowait = true}
-        keyset("x", "<leader>a", "<Plug>(coc-codeaction-selected)", opts)
-        keyset("n", "<leader>a", "<Plug>(coc-codeaction-selected)", opts)
-
-        -- Remap keys for apply code actions at the cursor position.
-        keyset("n", "<leader>ac", "<Plug>(coc-codeaction-cursor)", opts)
-        -- Remap keys for apply source code actions for current file.
-        keyset("n", "<leader>as", "<Plug>(coc-codeaction-source)", opts)
-        -- Apply the most preferred quickfix action on the current line.
-        keyset("n", "<leader>qf", "<Plug>(coc-fix-current)", opts)
-
-        -- Remap keys for apply refactor code actions.
-        keyset("n", "<leader>re", "<Plug>(coc-codeaction-refactor)", { silent = true })
-        keyset("x", "<leader>r", "<Plug>(coc-codeaction-refactor-selected)", { silent = true })
-        keyset("n", "<leader>r", "<Plug>(coc-codeaction-refactor-selected)", { silent = true })
-
-        -- Run the Code Lens actions on the current line
-        keyset("n", "<leader>cl", "<Plug>(coc-codelens-action)", opts)
-
-
-        -- Map function and class text objects
-        -- NOTE: Requires 'textDocument.documentSymbol' support from the language server
-        keyset("x", "if", "<Plug>(coc-funcobj-i)", opts)
-        keyset("o", "if", "<Plug>(coc-funcobj-i)", opts)
-        keyset("x", "af", "<Plug>(coc-funcobj-a)", opts)
-        keyset("o", "af", "<Plug>(coc-funcobj-a)", opts)
-        keyset("x", "ic", "<Plug>(coc-classobj-i)", opts)
-        keyset("o", "ic", "<Plug>(coc-classobj-i)", opts)
-        keyset("x", "ac", "<Plug>(coc-classobj-a)", opts)
-        keyset("o", "ac", "<Plug>(coc-classobj-a)", opts)
-
-
-        -- Remap <C-f> and <C-b> to scroll float windows/popups
-        ---@diagnostic disable-next-line: redefined-local
-        local opts = {silent = true, nowait = true, expr = true}
-        keyset("n", "<C-f>", 'coc#float#has_scroll() ? coc#float#scroll(1) : "<C-f>"', opts)
-        keyset("n", "<C-b>", 'coc#float#has_scroll() ? coc#float#scroll(0) : "<C-b>"', opts)
-        keyset("i", "<C-f>",
-               'coc#float#has_scroll() ? "<c-r>=coc#float#scroll(1)<cr>" : "<Right>"', opts)
-        keyset("i", "<C-b>",
-               'coc#float#has_scroll() ? "<c-r>=coc#float#scroll(0)<cr>" : "<Left>"', opts)
-        keyset("v", "<C-f>", 'coc#float#has_scroll() ? coc#float#scroll(1) : "<C-f>"', opts)
-        keyset("v", "<C-b>", 'coc#float#has_scroll() ? coc#float#scroll(0) : "<C-b>"', opts)
-
-
-        -- Use CTRL-S for selections ranges
-        -- Requires 'textDocument/selectionRange' support of language server
-        keyset("n", "<C-s>", "<Plug>(coc-range-select)", {silent = true})
-        keyset("x", "<C-s>", "<Plug>(coc-range-select)", {silent = true})
-
-
-        -- Add `:Format` command to format current buffer
-        vim.api.nvim_create_user_command("Format", "call CocAction('format')", {})
-
-        -- " Add `:Fold` command to fold current buffer
-        vim.api.nvim_create_user_command("Fold", "call CocAction('fold', <f-args>)", {nargs = '?'})
-
-        -- Add `:OR` command for organize imports of the current buffer
-        vim.api.nvim_create_user_command("OR", "call CocActionAsync('runCommand', 'editor.action.organizeImport')", {})
-
-        -- Add (Neo)Vim's native statusline support
-        -- NOTE: Please see `:h coc-status` for integrations with external plugins that
-        -- provide custom statusline: lightline.vim, vim-airline
-        vim.opt.statusline:prepend("%{coc#status()}%{get(b:,'coc_current_function','${''''}')}")
-
-        ---@diagnostic disable-next-line: redefined-local
-        local opts = {silent = true, nowait = true}
-        keyset("n", "<space>a", ":<C-u>CocList diagnostics<cr>", opts)
-        keyset("n", "<space>e", ":<C-u>CocList extensions<cr>", opts)
-        keyset("n", "<space>c", ":<C-u>CocList commands<cr>", opts)
-        keyset("n", "<space>o", ":<C-u>CocList outline<cr>", opts)
-        keyset("n", "<space>s", ":<C-u>CocList -I symbols<cr>", opts)
-        keyset("n", "<space>j", ":<C-u>CocNext<cr>", opts)
-        keyset("n", "<space>k", ":<C-u>CocPrev<cr>", opts)
-        keyset("n", "<space>p", ":<C-u>CocListResume<cr>", opts)
-      if vim.g.neovide == true then
-        -- Copy to system clipboard (Normal/Visual mode)
-        vim.keymap.set({"n", "x"}, "<C-S-c>", '"+y', {desc = "Copy system clipboard"})
-        
-        -- Paste from system clipboard (Normal/Visual mode)
-        vim.keymap.set({"n", "x"}, "<C-S-v>", '"+p', {desc = "Paste system clipboard"})
-        
-        -- Paste from system clipboard (Insert mode)
-        vim.keymap.set("i", "<C-S-v>", '<C-r><C-o>+', {desc = "Paste system clipboard"})
+      }
+      
+      -- Neovide специфичные настройки
+      if vim.g.neovide then
+        vim.o.guifont = "FiraCode Nerd Font:h12"
+        vim.g.neovide_transparency = 0.95
+        vim.g.neovide_background_color = "#1e1e2e"
       end
-      '';
-      extraConfig = ''
-        if exists("g:neovide")
-            let g:neovide_padding_top = 15
-            let g:neovide_opacity = 0.2
-        endif
-        augroup autosave
-          autocmd!
-          autocmd TextChanged,TextChangedI * if &modifiable && !&readonly | silent! write | endif
-        augroup END
-      '';    
+    '';
+    
+    extraConfig = ''
+      " Основные настройки
+      set scrolloff=8
+      set mouse=a
+      set clipboard+=unnamedplus
+      set undofile
+      set undodir=~/.vim/undodir
+      set noswapfile
+      set timeoutlen=500
+      set completeopt=menu,menuone,noselect
+      
+      " Прозрачность
+      highlight Normal guibg=none
+      highlight NonText guibg=none
+      highlight EndOfBuffer ctermbg=none guibg=none
+      highlight SignColumn ctermbg=none guibg=none
+      highlight StatusLine guibg=none
+      
+      inoremap <C-S> <Nop>
+      " Автосохранение
+      augroup autosave
+        autocmd!
+        autocmd TextChanged,TextChangedI * if &modifiable && !&readonly | silent! write | endif
+      augroup END
+    '';
   };
 }
