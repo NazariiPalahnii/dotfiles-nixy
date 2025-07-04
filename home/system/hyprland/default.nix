@@ -64,7 +64,6 @@ in {
         "swww-daemon"
         "obsidian"
         "discord"
-        "hyprpanel"
         "dbus-update-activation-environment --systemd --all &"
         #"systemctl --user enable --now hyprpaper.service &"
         "systemctl --user enable --now hypridle.service &"

@@ -28,7 +28,7 @@ let
   location = config.var.location;
 in {
 
-  #imports = [ inputs.hyprpanel.homeManagerModules.hyprpanel ];
+ wayland.windowManager.hyprland.settings.exec-once = ["hyprpanel"];
 
   programs.hyprpanel = {
     enable = true;
